@@ -15,7 +15,7 @@ class AppStore {
 
   async load() {
     const keys = Object.keys(this.storage);
-    const result = await browser.storage.sync.get(keys);
+    const result = await browser.storage.local.get(keys);
 
     keys.forEach((key) => {
       this[key] = ![undefined, null].includes(result[key]) ? result[key] : this.DEFAULT_VALUES[key];
@@ -23,7 +23,7 @@ class AppStore {
   }
 
   async save() {
-    await browser.storage.sync.set(this.storage);
+    await browser.storage.local.set(this.storage);
   }
 
   /**

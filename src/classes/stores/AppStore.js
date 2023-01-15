@@ -31,18 +31,19 @@ class AppStore {
    * @return {Number}
    */
   getNextRefill(resin = 1) {
-    return this.nextRefill + resin * (60 * this.rate * 1000);
+    return this.nextRefill + (resin * 60 * this.rate * 1000);
   }
 
   async refillFromLastTimestamp() {
     const now = Date.now();
     const time = (now - this.advance) / 1000;
     const minutes = Math.floor(time / 60);
-    const refillValue = Math.min(this.maxResin - this.resin, Math.floor(minutes / this.rate));
+    const toRefill = Math.floor(minutes / this.rate);
+    const refillValue = Math.min(this.maxResin - this.resin, toRefill);
 
     if (refillValue > 0) {
       this.resin += refillValue;
-      this.nextRefill = this.getNextRefill(refillValue);
+      this.nextRefill = this.getNextRefill(toRefill);
       this.advance = now;
       this.updatePopup();
     }

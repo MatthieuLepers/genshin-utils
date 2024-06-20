@@ -87,7 +87,7 @@ class AppStore {
       rate: 8,
       nextRefill: Date.now(),
       advance: Date.now(),
-      maxResin: 160,
+      maxResin: 200,
     };
   }
 }

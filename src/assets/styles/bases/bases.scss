@@ -6,8 +6,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: color(primary);
-  color: color(text);
+  background-color: color(grey900);
+  color: color(grey000);
   outline: none;
 }
 
@@ -71,14 +71,6 @@ input[type="date"],
 input[type="number"],
 textarea {
   cursor: text;
-}
-
-textarea,
-input,
-button,
-a,
-select {
-  outline: none;
 }
 
 textarea {

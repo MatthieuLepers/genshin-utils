@@ -4,11 +4,8 @@
   </div>
 </template>
 
-<script>
-import MaterialUtils from '../components/MaterialUtils';
+<script setup>
+import MaterialUtils from '@/components/MaterialUtils.vue';
 
-export default {
-  name: 'MaterialsView',
-  components: { MaterialUtils },
-};
+defineOptions({ name: 'MaterialsView' });
 </script>

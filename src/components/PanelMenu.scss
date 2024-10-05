@@ -1,0 +1,56 @@
+@import '~styles/utilities.scss';
+
+.PanelMenu {
+  display: flex;
+  width: 100%;
+
+  &Container {
+    width: 100%;
+
+    &:not(.PanelMenuContainer--solo) {
+      height: 100%;
+    }
+  }
+
+  &Button {
+    @include set-font-scale('s');
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: color(grey800);
+    padding: rem(4px);
+    border-top: 2px solid color(grey700);
+    border-bottom: 2px solid color(grey700);
+    font-weight: 700;
+    text-decoration: none;
+
+    &:first-of-type {
+      border-radius: 50px 0 0 50px;
+      border-left: 2px solid color(grey700);
+
+      &:focus,
+      &.PanelMenuButton--selected {
+        border-left-color: color(grey100);
+      }
+    }
+
+    &:last-of-type {
+      border-radius: 0 50px 50px 0;
+      border-right: 2px solid color(grey700);
+
+      &:focus,
+      &.PanelMenuButton--selected {
+        border-right-color: color(grey100);
+      }
+    }
+
+    &:focus,
+    &.PanelMenuButton--selected {
+      background-color: color(grey100);
+      border-top-color: color(grey100);
+      border-bottom-color: color(grey100);
+      color: color(grey900);
+    }
+  }
+}

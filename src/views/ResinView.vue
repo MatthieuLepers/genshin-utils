@@ -4,11 +4,8 @@
   </div>
 </template>
 
-<script>
-import ResinCounter from '@/components/ResinCounter';
+<script setup>
+import ResinCounter from '@/components/ResinCounter.vue';
 
-export default {
-  name: 'ResinView',
-  components: { ResinCounter },
-};
+defineOptions({ name: 'ResinView' });
 </script>

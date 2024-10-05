@@ -1,32 +1,82 @@
-module.exports = {
+export default {
   root: true,
-  parserOptions: {
-    parser: 'babel-eslint',
-  },
   env: {
-    node: true,
     webextensions: true,
+    commonjs: true,
+    es2021: true,
+    node: true,
+    jest: true,
   },
-  extends: ['plugin:vue/essential', '@vue/airbnb'],
+  extends: [
+    'eslint:recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:vue/vue3-essential',
+    'airbnb-base',
+    'airbnb-typescript/base',
+  ],
+  parser: 'vue-eslint-parser',
+  parserOptions: {
+    parser: "@typescript-eslint/parser",
+    ecmaVersion: 'latest',
+    project: ['./tsconfig.json'],
+    extraFileExtensions: ['.vue'],
+  },
+  plugins: [
+    'vue',
+    'import',
+    '@typescript-eslint',
+  ],
+  globals: {
+    chrome: true,
+  },
+  settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+        project: ['./tsconfig.json'],
+      },
+    },
+  },
   rules: {
-    // don't require .vue extension when importing
+    'global-require': 'off',
+    'import/no-cycle': 'off',
+    'import/no-dynamic-require': 'off',
     'import/extensions': ['error', 'always', {
       js: 'never',
-      vue: 'never',
+      jsx: 'never',
+      ts: 'never',
+      tsx: 'never',
     }],
-    'no-param-reassign': 0,
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'max-len': [
-      'error',
-      {
-        code: 2000,
-        tabWidth: 2,
-      },
-    ],
-    'semi-style': 0,
-    'function-paren-newline': 0,
-    'class-methods-use-this': 0,
-    'object-curly-newline': 0,
+    'import/prefer-default-export': 'off',
+    'object-curly-newline': ['error', {
+      ImportDeclaration: { multiline: true, minProperties: 4 },
+    }],
+    'no-param-reassign': ['error', {
+      props: true,
+      ignorePropertyModificationsFor: [
+        'acc', // For reduce accumulator
+        'app', // For Vue plugin definition
+        'el', // For custom directives
+        'vnode', // For custom directives
+        'e', // For e.returnValue
+      ],
+    }],
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'linebreak-style': ['error', 'unix'],
+    'max-len': ['error', {
+      code: 512,
+      tabWidth: 2,
+    }],
+    'semi-style': 'off',
+    'class-methods-use-this': 'off',
+    'func-names': 'off',
+    'vue/multi-word-component-names': 'off',
+    'vue/no-multiple-template-root': 'off',
+    'vue/require-default-prop': 'off',
   },
 };

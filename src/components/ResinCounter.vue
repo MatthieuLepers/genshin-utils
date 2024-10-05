@@ -1,86 +1,129 @@
 <template>
-  <div class="GenshinUtils">
-    <div class="Capsule">
-      <img src="../../public/img/resin.png" alt="Resin" />
-      <div class="ResinCounter">
-        <input class="Input ResinCounterInput" type="text" min="0" :max="maxResin" v-model="resin" @mousewheel="handleMouseWheel" />
-        <span class="ResinCounterMax">{{ maxResin }}</span>
-      </div>
+  <div class="resin-counter">
+    <div class="resin-counter__capsule">
+      <img src="/img/resin.png" alt="Resin" />
+      <input
+        class="resin-counter__input"
+        type="text"
+        v-model="state.resin"
+        @wheel.stop="actions.handleMouseWheel"
+      />
+      <span class="resin-counter__capsule__max">
+        {{ state.maxResin }}
+      </span>
+      <MaterialButton
+        class="resin-counter__capsule__sync"
+        icon="icon-reload"
+        title="Sync"
+        :modifiers="{ secondary: true }"
+        @click="actions.handleClickSync"
+      />
     </div>
-    <button class="SubtractButton" v-if="resin >= 20" @click="handleSubtract(-20)">-20</button>
-    <button class="SubtractButton" v-if="resin >= 30" @click="handleSubtract(-30)">-30</button>
-    <button class="SubtractButton" v-if="resin >= 40" @click="handleSubtract(-40)">-40</button>
-    <button class="SubtractButton" v-if="resin >= 60" @click="handleSubtract(-60)">-60</button>
-    <div class="Timer">
+    <div class="resin-counter__buttons" v-if="state.resin >= 20">
+      <button
+        class="resin-counter__button"
+        v-if="state.resin >= 20"
+        @click="actions.handleSubtract(-20)"
+      >-20</button>
+      <button
+        class="resin-counter__button"
+        v-if="state.resin >= 30"
+        @click="actions.handleSubtract(-30)"
+      >-30</button>
+      <button
+        class="resin-counter__button"
+        v-if="state.resin >= 40"
+        @click="actions.handleSubtract(-40)"
+      >-40</button>
+      <button
+        class="resin-counter__button"
+        v-if="state.resin >= 60"
+        @click="actions.handleSubtract(-60)"
+      >-60</button>
+    </div>
+    <div class="resin-counter__timer">
       <h3>Next refill</h3>
-      <p>in {{ text.nextRefill }}</p>
+      <p>in {{ State.nextRefill }}</p>
     </div>
-    <div class="Timer">
+    <div class="resin-counter__timer">
       <h3>Fully refilled</h3>
-      <p>{{ text.fullRefill }}</p>
+      <p>{{ State.fullRefill }}</p>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'GenshinUtils',
-  data() {
-    return {
-      resin: null,
-      rate: null,
-      maxResin: null,
-      nextRefill: null,
-      advance: null,
-      text: {
-        nextRefill: null,
-        fullRefill: null,
-      },
-    };
+<script setup>
+import { reactive, computed, onMounted } from 'vue';
+
+import MaterialButton from '@/components/Materials/Button/index.vue';
+
+defineOptions({ name: 'GenshinUtils' });
+
+const state = reactive({
+  resin: null,
+  rate: null,
+  maxResin: null,
+  nextRefill: null,
+  advance: null,
+  currentTime: Date.now(),
+});
+
+const State = computed(() => {
+  const time = (state.nextRefill - state.currentTime) / 1000;
+  const seconds = `${Math.max(0, Math.floor(time % 60))}`.padStart(2, '0');
+  const minutes = Math.max(0, Math.floor(time / 60));
+
+  const today = new Date();
+  const fullRefillDate = new Date(state.nextRefill + ((((state.maxResin - state.resin) * state.rate) / 60) * 3600) * 1000);
+  const dayStr = fullRefillDate.getDate() === today.getDate() ? 'Today' : 'Tomorrow';
+
+  return {
+    nextRefill: `${minutes}:${seconds}`,
+    fullRefill: `${dayStr} at ${fullRefillDate.getHours()}:${`${fullRefillDate.getMinutes()}`.padStart(2, '0')}`,
+  };
+});
+
+const actions = {
+  updatePopup(details) {
+    state.resin = details.resin;
+    state.rate = details.rate;
+    state.maxResin = details.maxResin;
+    state.nextRefill = details.nextRefill;
+    state.advance = details.advance;
   },
-  mounted() {
-    browser.runtime.onMessage.addListener((req) => {
-      const { event, details } = req;
-      if (this[event]) {
-        this[event](details);
-      }
+  handleClickSync() {
+    chrome.runtime.sendMessage({
+      event: 'updateStore',
+      details: { nextRefill: state.nextRefill - (state.nextRefill - state.currentTime) },
     });
   },
-  methods: {
-    updatePopup(details) {
-      this.resin = details.resin;
-      this.rate = details.rate;
-      this.maxResin = details.maxResin;
-      this.nextRefill = details.nextRefill;
-      this.advance = details.advance;
-      this.text.nextRefill = this.getNextRefillText();
-      this.text.fullRefill = this.getFullRefillText();
-    },
-    handleMouseWheel(e) {
-      const resin = Math.min(this.maxResin, Math.max(0, e.deltaY < 0 ? this.resin + 1 : this.resin - 1));
-      browser.runtime.sendMessage({ event: 'updateStore', details: { resin } });
-    },
-    getNextRefillText() {
-      const time = (this.nextRefill - Date.now()) / 1000;
-      const seconds = `${Math.max(0, Math.floor(time % 60))}`.padStart(2, '0');
-      const minutes = Math.max(0, Math.floor(time / 60));
-      return `${minutes}:${seconds}`;
-    },
-    getFullRefillText() {
-      const today = new Date();
-      const fullRefillDate = new Date(this.nextRefill + ((((this.maxResin - this.resin) * this.rate) / 60) * 3600) * 1000);
-      const dayStr = fullRefillDate.getDate() === today.getDate() ? 'Today' : 'Tomorrow';
-      const hours = fullRefillDate.getHours();
-      const minutes = `${fullRefillDate.getMinutes()}`.padStart(2, '0');
-      return `${dayStr} at ${hours}:${minutes}`;
-    },
-    handleSubtract(amount) {
-      const resin = Math.min(this.maxResin, Math.max(0, this.resin + amount));
-      this.resine = resin;
-      browser.runtime.sendMessage({ event: 'updateStore', details: { resin } });
-    },
+  handleMouseWheel(e) {
+    const resin = Math.min(state.maxResin, Math.max(0, e.deltaY < 0 ? state.resin + 1 : state.resin - 1));
+    chrome.runtime.sendMessage({
+      event: 'updateStore',
+      details: { resin },
+    });
+  },
+  handleSubtract(amount) {
+    state.resin = Math.min(state.maxResin, Math.max(0, state.resin + amount));
+    chrome.runtime.sendMessage({
+      event: 'updateStore',
+      details: { resin: state.resin },
+    });
   },
 };
+
+onMounted(() => {
+  setInterval(() => {
+    state.currentTime = Date.now();
+  }, 1000);
+  chrome.runtime.onMessage.addListener((req) => {
+    const { event, details } = req;
+    if (actions[event]) {
+      actions[event](details);
+    }
+  });
+});
 </script>
 
 <style lang="scss" src="./ResinCounter.scss">

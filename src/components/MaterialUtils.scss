@@ -1,51 +1,54 @@
-@import '@/assets/scss/utilities.scss';
+@import '~styles/utilities.scss';
 
-.MaterialUtils {
-  width: 148px;
+.materials {
+  width: 100%;
 
-  .MaterialInput {
+  &__input {
     display: flex;
     flex-direction: column;
-    margin-top: 4px;
-    border: 1px solid lighten(color(primary), 11.74);
+    margin-top: rem(8px);
+    border: 1px solid color(grey800);
 
-    &Label {
-      background-color: lighten(color(primary), 23.48);
+    &-label {
+      background-color: color(grey700);
       text-align: center;
       text-transform: uppercase;
       padding: 2px;
     }
 
-    &Field {
-      @include font-size(12);
+    &-field {
+      @include set-font-scale('xs');
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2px;
+      padding: rem(2px);
+      position: relative;
 
       input {
-        @include font-size(12);
-        width: 18px;
+        @include set-font-scale('xs');
+        width: 100%;
         text-align: right;
-        margin-right: 2px;
-        color: color(f);
-        background-color: color(primary);
+        color: color(grey000);
+        background-color: transparent;
+        padding: rem(8px) calc(50% + 2px) rem(8px) rem(8px);
+      }
 
-        &:hover {
-          background-color: rgba(color(f), .3);
-        }
+      span {
+        position: absolute;
+        left: calc(50% + 2px);
+        top: calc(50% - 9px);
       }
     }
   }
 
-  .Total {
-    @include font-size(12);
-    margin-top: 4px;
-    border: 1px solid lighten(color(primary), 11.74);
+  &__total {
+    @include set-font-scale('xs');
+    margin-top: rem(8px);
+    border: 1px solid color(grey800);
     text-align: center;
     text-transform: uppercase;
-    background-color: lighten(color(primary), 23.48);
-    padding: 2px;
+    background-color: color(grey700);
+    padding: rem(8px);
     display: block;
     width: 100%;
   }

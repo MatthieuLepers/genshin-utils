@@ -1,88 +1,97 @@
-@import '@/assets/scss/utilities.scss';
+@import '~styles/utilities.scss';
 
-.GenshinUtils {
-  padding: 4px;
+.resin-counter {
+  margin-top: rem(8px);
 
-  .Input {
-    background: transparent;
-    color: color(text);
-  }
-
-  .Capsule {
+  &__input {
+    @include set-font-scale('l');
+    font-family: Calibri, sans-serif;
+    font-weight: 700;
+    width: 100%;
+    background: color(grey800);
+    color: color(grey000);
+    padding: 0 rem(118px) 0 rem(32px);
+    border: 1px solid color(secondary200);
     border-radius: 18px;
     height: 36px;
+    text-align: right;
+  }
+
+  &__capsule {
+    @include set-font-scale('l');
+    font-family: Calibri, sans-serif;
+    font-weight: 700;
     width: 100%;
     display: flex;
     align-items: center;
-    border: 1px solid color(secondary);
+    position: relative;
 
     img {
       width: 24px;
       height: 24px;
-      margin: 0 6px;
+      position: absolute;
+      top: calc(50% - 12px);
+      left: 6px;
     }
 
-    .ResinCounter {
-      display: flex;
-      flex: 1;
-      justify-content: center;
-      align-items: center;
-      padding-right: 24px;
-      font-weight: 600;
-      font-size: 20px;
-      font-family: Calibri, sans-serif;
+    &__max {
+      position: absolute;
+      right: 80px;
+      display: block;
 
-      &Input {
-        width: 35px;
-        text-align: right;
-        display: block;
-        line-height: 18px;
-        font-weight: 700;
-        font-size: 20px;
-        font-family: Calibri, sans-serif;
+      &::before {
+        content: '/';
+        margin: 0 2px;
       }
+    }
 
-      &Max {
-        display: block;
-        line-height: 18px;
-
-        &::before {
-          content: '/';
-          margin: 0 2px;
-        }
-      }
+    &__sync {
+      position: absolute;
+      right: 2px;
     }
   }
 
-  .Timer {
-    margin-top: 4px;
-    border: 1px solid lighten(color(primary), 11.74);
+  &__buttons {
+    display: flex;
+    border: 1px solid color(grey800);
+    margin-top: rem(8px);
+  }
+
+  &__button {
+    @include set-font-scale('xs');
+    @include transition(background-color .2s ease);
+    flex: 1;
+    width: calc(25% - 3px);
+    padding: rem(8px);
+    font-weight: 600;
+
+    &:not(:last-of-type) {
+      border-right: 1px solid color(grey800);
+    }
+
+    &:focus,
+    &:hover {
+      background-color: color(secondary200);
+    }
+  }
+
+  &__timer {
+    margin-top: rem(8px);
+    border: 1px solid color(grey800);
 
     h3 {
-      @include font-size(12);
+      @include set-font-scale('xs');
       text-align: center;
       text-transform: uppercase;
-      background-color: lighten(color(primary), 23.48);
-      padding: 2px;
+      background-color: color(grey700);
+      padding: rem(2px);
     }
 
     p {
-      @include font-size(12);
+      @include set-font-scale('xs');
       margin: 0;
-      padding: 2px;
+      padding: rem(8px);
       text-align: center;
-    }
-  }
-
-  .SubtractButton {
-    @include font-size(12);
-    width: calc(25% - 3px);
-    border: 1px solid lighten(color(primary), 11.74);
-    padding: 2px 0;
-    margin-top: 4px;
-
-    &:not(:first-of-type) {
-      margin-left: 4px;
     }
   }
 }

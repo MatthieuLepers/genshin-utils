@@ -1,0 +1,28 @@
+@import '~styles/utilities.scss';
+
+@import '~styles/bases/bases.scss';
+@import '~styles/bases/classes.scss';
+@import '~styles/bases/flexy-grid.scss';
+
+#app {
+  width: 240px;
+  height: 100%;
+  padding: rem(8px);
+
+  ::-webkit-scrollbar {
+    background: none;
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: color(grey800);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(color(grey000), .4);
+  }
+}

@@ -7,6 +7,8 @@
         type="text"
         v-model="state.resin"
         @wheel.stop="actions.handleMouseWheel"
+        @focus="state.focused = true"
+        @blur="state.focused = false"
       />
       <span class="resin-counter__capsule__max">
         {{ state.maxResin }}
@@ -66,6 +68,7 @@ const state = reactive({
   nextRefill: null,
   advance: null,
   currentTime: Date.now(),
+  focused: false,
 });
 
 const State = computed(() => {
@@ -85,7 +88,9 @@ const State = computed(() => {
 
 const actions = {
   updatePopup(details) {
-    state.resin = details.resin;
+    if (!state.focused) {
+      state.resin = details.resin;
+    }
     state.rate = details.rate;
     state.maxResin = details.maxResin;
     state.nextRefill = details.nextRefill;

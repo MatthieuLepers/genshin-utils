@@ -6,6 +6,10 @@ interface IAppStorage {
   nextRefill: number;
   advance: number;
   maxResin: number;
+  a: number,
+  b: number,
+  c: number,
+  d: number,
 }
 
 const DEFAULT_STORAGE = {
@@ -14,6 +18,10 @@ const DEFAULT_STORAGE = {
   nextRefill: Date.now(),
   advance: Date.now(),
   maxResin: 200,
+  a: 0,
+  b: 0,
+  c: 0,
+  d: 0,
 };
 
 const useAppStore = () => {
@@ -23,6 +31,10 @@ const useAppStore = () => {
     nextRefill: Date.now(),
     advance: Date.now(),
     maxResin: 200,
+    a: 0,
+    b: 0,
+    c: 0,
+    d: 0,
   });
 
   const state = reactive({
@@ -32,14 +44,14 @@ const useAppStore = () => {
   const actions = {
     async load() {
       const keys = Object.keys(storage);
-      const result = await chrome.storage.local.get(keys);
+      const result = await chrome.storage.sync.get(keys);
 
       keys.forEach((key) => {
         storage[key] = ![undefined, null].includes(result[key]) ? result[key] : DEFAULT_STORAGE[key];
       });
     },
     async save() {
-      await chrome.storage.local.set({ ...storage });
+      await chrome.storage.sync.set({ ...storage });
     },
     getNextRefill(resin = 1): number {
       return storage.nextRefill + (resin * 60 * storage.rate * 1000);

@@ -20,7 +20,7 @@
     </label>
 
     <label
-      v-for="(key, index) in Object.keys(state.materials)"
+      v-for="(key, index) in state.materials"
       :key="index"
       v-show="State.option.materials[index] > 0"
       :for="`${$uid}${index}`"
@@ -32,9 +32,11 @@
       <span class="materials__input-field">
         <input
           type="text"
-          v-model="state.materials[key]"
+          v-model="state.materials[index]"
           :id="`${$uid}${index}`"
-          @wheel="actions.handleMouseWheel($event, key)"
+          @wheel="actions.handleMouseWheel($event, index)"
+          @focus="state.focused = index"
+          @blur="state.focused = null"
         />
         <span>/ {{ State.option.materials[index] }}</span>
       </span>
@@ -47,7 +49,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, getCurrentInstance } from 'vue';
+import { reactive, computed, watch, getCurrentInstance, onMounted } from 'vue';
 
 defineOptions({ name: 'MaterialUtils' });
 
@@ -55,7 +57,8 @@ const $uid = getCurrentInstance().uid;
 
 const state = reactive({
   selectedOption: 5,
-  materials: { a: 0, b: 0, c: 0, d: 0 },
+  materials: [0, 0, 0, 0],
+  focused: null,
 });
 
 const State = computed(() => {
@@ -69,7 +72,7 @@ const State = computed(() => {
   ];
   const [option] = options.filter((o) => o.value === state.selectedOption);
   const needed = f(...option.materials);
-  const result = f(...Object.values(state.materials).map((i) => parseInt(i, 10)));
+  const result = f(...state.materials.map((i) => parseInt(i, 10)));
 
   return {
     options,
@@ -80,10 +83,34 @@ const State = computed(() => {
 });
 
 const actions = {
-  handleMouseWheel(e, key) {
-    state.materials[key] = Math.max(0, e.deltaY < 0 ? state.materials[key] + 1 : state.materials[key] - 1);
+  handleMouseWheel(e, index) {
+    state.materials[index] = Math.max(0, e.deltaY < 0 ? state.materials[index] + 1 : state.materials[index] - 1);
+  },
+  updatePopup(details) {
+    const letters = ['a', 'b', 'c', 'd'];
+    [...Array(4).keys()].forEach((index) => {
+      if (state.focused !== index) {
+        state.materials[index] = details[letters[index]];
+      }
+    });
   },
 };
+
+watch(() => state.materials, ([a, b, c, d]) => {
+  chrome.runtime.sendMessage({
+    event: 'updateStore',
+    details: { a, b, c, d },
+  });
+}, { deep: true });
+
+onMounted(() => {
+  chrome.runtime.onMessage.addListener((req) => {
+    const { event, details } = req;
+    if (actions[event]) {
+      actions[event](details);
+    }
+  });
+});
 </script>
 
 <style lang="scss" src="./MaterialUtils.scss">
